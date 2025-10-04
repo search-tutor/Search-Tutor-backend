@@ -1104,7 +1104,12 @@ async function run() {
     // await client.close();
   }
 }
+
 run().catch(console.dir);
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 app.get("/", (req, res) => {
   res.send("search teacher is live");
