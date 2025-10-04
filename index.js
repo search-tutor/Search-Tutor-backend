@@ -22,17 +22,16 @@ const cors = require("cors");
 const port = process.env.PORT || 4000;
 
 // middleware
+
 const allowedOrigins = [
   'https://searchtutorbd.com',
-  'http://localhost:5173', // local dev
-  // Add your Vercel frontend URL if needed
+  'http://localhost:5173'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
       return callback(new Error('Not allowed by CORS'));
@@ -40,9 +39,13 @@ app.use(cors({
   },
   credentials: true
 }));
+app.options('*', cors());
 app.use(express.json());
 
 function verifyToken(req, res, next) {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
@@ -1088,7 +1091,6 @@ async function run() {
         expiresIn: process.env.JWT_EXPIRES_IN,
       });
 
-      // cookie set করো না, শুধু token response দাও
       res.send({ success: true, token });
     });
 
