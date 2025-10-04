@@ -23,12 +23,23 @@ const port = process.env.PORT || 4000;
 
 // middleware
 const allowedOrigins = [
-  /^https:\/\/searchtutorbd\.com$/,
-  /^http:\/\/localhost(:[0-9]+)?$/,
-  /^https:\/\/.*\.vercel\.app$/
+  'https://searchtutorbd.com',
+  'http://localhost:5173', // local dev
+  // Add your Vercel frontend URL if needed
 ];
 
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 function verifyToken(req, res, next) {
